@@ -1,69 +1,158 @@
-import Image from "next/image";
+import Link from "next/link";
+
+import { CodeBlock } from "@/components/ui/code-block";
+import {
+  H1,
+  H2,
+  InlineCode,
+  List,
+  P,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  Table,
+} from "@/components/ui/typography";
+
+const beforeCode = `const [todos, setTodos] = useState<Todo[]>([]);
+const [isLoading, setIsLoading] = useState(true);
+const [error, setError] = useState<Error | null>(null);
+
+useEffect(() => {
+  let ignore = false; // race conditions
+  setIsLoading(true);
+  fetch(\`/api/todos?limit=\${limit}\`)
+    .then((res) => res.json())
+    .then((data) => !ignore && setTodos(data))
+    .catch((err) => !ignore && setError(err))
+    .finally(() => !ignore && setIsLoading(false));
+  return () => { ignore = true };
+}, [limit]);
+
+// ❌ no caching, no dedup, no retry, no refetch on focus,
+//    no invalidation after mutations...`;
+
+const afterCode = `const { data: todos, isPending, error } = useQuery({
+  queryKey: ["todos", "list", { limit }],
+  queryFn: ({ signal }) => fetchTodos(limit, signal),
+});
+
+// ✅ cached, deduplicated, retried, refetched when stale,
+//    cancelled on unmount, shared across components`;
+
+const STATE_COMPARISON = [
+  ["Owner", "The browser", "A remote server"],
+  [
+    "Examples",
+    "Modal open, form input, theme",
+    "Todos, users, segments, reports",
+  ],
+  ["Can be outdated?", "No", "Yes, someone else can change it"],
+  [
+    "Needs",
+    "useState / Context / Zustand",
+    "Caching, dedup, refetching, invalidation",
+  ],
+];
+
+const AGENDA = [
+  ["Mental Model", "/basics/mental-model"],
+  ["Query Keys & Options", "/basics/query-options"],
+  ["Mutations & Optimistic Updates", "/mutations/updating-the-cache"],
+  ["Pagination & Infinite Query", "/lists/pagination"],
+  ["Advanced Patterns", "/advanced/prefetching"],
+  ["Backend: Prisma & Route Handlers", "/backend/prisma"],
+  ["Common Pitfalls", "/wrap-up/pitfalls"],
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="space-y-12">
+      <section>
+        <H1>TanStack Query — Beyond the Basics</H1>
+        <P>
+          TanStack Query (formerly React Query) is often described as a
+          &quot;data fetching library&quot;. It doesn&apos;t actually fetch
+          anything: <b>you</b> bring the fetch function. What it gives you is an{" "}
+          <b>async state manager</b>, a cache for server state.
+        </P>
+      </section>
+
+      <section>
+        <H2>Client state vs server state</H2>
+        <Table>
+          <THead>
+            <TR>
+              <TH />
+              <TH>Client state</TH>
+              <TH>Server state</TH>
+            </TR>
+          </THead>
+          <TBody>
+            {STATE_COMPARISON.map(([label, client, server]) => (
+              <TR key={label}>
+                <TD className="font-semibold">{label}</TD>
+                <TD>{client}</TD>
+                <TD>{server}</TD>
+              </TR>
+            ))}
+          </TBody>
+        </Table>
+      </section>
+
+      <section>
+        <H2>useEffect vs useQuery</H2>
+        <CodeBlock
+          language="tsx"
+          filename="fetching todos"
+          tabs={[
+            { name: "useEffect", code: beforeCode },
+            { name: "useQuery", code: afterCode },
+          ]}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </section>
+
+      <section>
+        <H2>How to use this site</H2>
+        <List>
+          <li>
+            Each demo has a <b>Preview</b> and a <b>Code</b> tab. The code tab
+            shows the actual source file.
+          </li>
+          <li>
+            The <b>network simulator</b> in the sidebar adds latency and random
+            500 errors to every API call.
+          </li>
+          <li>
+            The <b>request log</b> under each demo shows what actually hits the
+            server. Open the TanStack Query Devtools (bottom right) to inspect
+            the cache.
+          </li>
+          <li>
+            The reset button reseeds the SQLite database and clears the cache.
+          </li>
+        </List>
+      </section>
+
+      <section>
+        <H2>Agenda</H2>
+        <ol className="list-decimal space-y-2 pl-6">
+          {AGENDA.map(([title, href]) => (
+            <li key={href}>
+              <Link href={href} className="underline underline-offset-4">
+                {title}
+              </Link>
+            </li>
+          ))}
+        </ol>
+        <P className="text-muted-foreground mt-6">
+          Examples use TanStack Query v5, Next.js App Router and Prisma with
+          SQLite.{" "}
+          <InlineCode>pnpm install && pnpm db:setup && pnpm dev</InlineCode> to
+          run it locally.
+        </P>
+      </section>
     </div>
   );
 }

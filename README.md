@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TanStack Query Tutorial
 
-## Getting Started
+An interactive tutorial site for an engineering sharing session on
+**TanStack Query v5** (formerly React Query), aimed at developers who already use
+it and want to go beyond the basics.
 
-First, run the development server:
+The site itself is the slide deck: every page explains one topic and has live
+demos with a **Preview** / **Code** tab, where the code tab shows the actual
+source file of the demo.
+
+## Topics
+
+| Section   | Pages                                                                  |
+| --------- | ---------------------------------------------------------------------- |
+| Basics    | Mental model (staleTime / gcTime, dedup), Query keys & `queryOptions`  |
+| Mutations | `invalidateQueries` vs `setQueryData`, Optimistic updates (cache & UI) |
+| Lists     | Pagination with `keepPreviousData`, `useInfiniteQuery` + cursor paging |
+| Advanced  | Prefetching, Dependent & parallel queries, Polling, Suspense, Errors   |
+| Backend   | Prisma + Next.js Route Handlers powering the demos                     |
+| Wrap-up   | Common pitfalls, v4 → v5 migration cheatsheet                          |
+
+## Tech stack
+
+- [Next.js](https://nextjs.org) (App Router, Route Handlers)
+- [TanStack Query v5](https://tanstack.com/query) + Devtools
+- [Prisma ORM](https://www.prisma.io) with SQLite (`better-sqlite3` driver adapter)
+- Tailwind CSS v4 + shadcn/ui
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install        # also runs `prisma generate`
+pnpm db:setup       # create dev.db and seed it
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Other scripts:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm db:reset       # drop, migrate and reseed the database
+pnpm db:studio      # browse the data with Prisma Studio
+pnpm lint
+pnpm format
+```
 
-## Learn More
+## Demo tooling
 
-To learn more about Next.js, take a look at the following resources:
+- **Network simulator** (sidebar): adds latency and a random error rate to every
+  API call. Route handlers read `?delay=<ms>` and `?fail=<0..1>`.
+- **Request log** (under each demo): what actually hit the server, including
+  cancelled requests.
+- **Reset button** (on each demo): reseeds the database, clears the query cache
+  and the request log.
+- **TanStack Query Devtools**: bottom-right corner.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+prisma/                  schema, migrations, seed
+src/app/api/             Route Handlers (todos, jobs, reset)
+src/app/<section>/       tutorial pages, demos live in _components/
+src/features/            fetchers + query key factories / queryOptions
+src/server/              Prisma client, API helpers, seed data
+src/lib/                 api client, network simulator
+```
