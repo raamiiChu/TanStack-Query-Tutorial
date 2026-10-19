@@ -57,26 +57,34 @@ export const CodeBlock = ({
 
   return (
     <div className="relative max-h-[60dvh] w-full overflow-auto rounded-lg bg-slate-900 font-mono text-sm">
-      <div className="sticky inset-0 flex flex-col gap-2">
+      <div className="sticky top-0 z-10 flex flex-col gap-2 border-b border-slate-700 bg-slate-900">
         {tabsExist && (
-          <div className="flex">
-            {tabs.map((tab, index) => (
-              <button
-                key={index}
-                onClick={() => setActiveTab(index)}
-                className={`px-3 !py-2 font-sans text-xs transition-colors ${
-                  activeTab === index
-                    ? "text-white"
-                    : "text-zinc-400 hover:text-zinc-200"
-                }`}
-              >
-                {tab.name}
-              </button>
-            ))}
+          <div className="flex items-center justify-between gap-2 pr-4">
+            <div className="flex overflow-x-auto">
+              {tabs.map((tab, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveTab(index)}
+                  className={`border-b-2 px-3 !py-2 font-sans text-xs whitespace-nowrap transition-colors ${
+                    activeTab === index
+                      ? "border-sky-400 text-white"
+                      : "border-transparent text-zinc-400 hover:text-zinc-200"
+                  }`}
+                >
+                  {tab.name}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={copyToClipboard}
+              className="flex shrink-0 items-center gap-1 font-sans text-xs text-zinc-400 transition-colors hover:text-zinc-200"
+            >
+              {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
+            </button>
           </div>
         )}
         {!tabsExist && filename && (
-          <div className="border-muted flex items-center justify-between border-b bg-slate-900/10 p-4 backdrop-blur-md">
+          <div className="flex items-center justify-between p-4">
             <div className="text-xs text-zinc-400">{filename}</div>
             <button
               onClick={copyToClipboard}
