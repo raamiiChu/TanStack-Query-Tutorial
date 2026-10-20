@@ -75,16 +75,16 @@ const sections: Section[] = [
         </P>
         <List>
           <li>
-            Toast in <InlineCode>QueryCache.onError</InlineCode> /{" "}
+            Global Toast: <InlineCode>QueryCache.onError</InlineCode> /{" "}
             <InlineCode>MutationCache.onError</InlineCode>
           </li>
           <li>
-            Inline error UI with <InlineCode>error</InlineCode> /{" "}
+            Inline error UI: <InlineCode>error</InlineCode> /{" "}
             <InlineCode>isError</InlineCode>
           </li>
           <li>
-            Error Boundary with <InlineCode>throwOnError: true</InlineCode> (or{" "}
-            <InlineCode>useSuspenseQuery</InlineCode>)
+            Error Boundary: <InlineCode>useSuspenseQuery</InlineCode> /{" "}
+            <InlineCode>throwOnError: true</InlineCode>
           </li>
         </List>
       </>
