@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 import { type QueryKey, hashKey, useQueryClient } from "@tanstack/react-query";
 
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const useNow = (intervalMs = 500) => {
   const [now, setNow] = useState(() => Date.now());
@@ -14,6 +15,16 @@ const useNow = (intervalMs = 500) => {
   }, [intervalMs]);
   return now;
 };
+
+const subscribeNothing = () => () => {};
+
+// Cache defaults differ between server and browser (e.g. gcTime), so only render in the browser.
+const useIsBrowser = () =>
+  useSyncExternalStore(
+    subscribeNothing,
+    () => true,
+    () => false
+  );
 
 const useQueryCacheVersion = () => {
   const queryClient = useQueryClient();
@@ -36,12 +47,23 @@ const formatDuration = (ms: number) => {
 };
 
 /** Shows every query in the cache whose key starts with `queryKey`. */
-const CacheInspector = ({ queryKey }: { queryKey: QueryKey }) => {
+type CacheInspectorProps = {
+  queryKey: QueryKey;
+  /** Highlights the entry the demo is currently reading. */
+  currentKey?: QueryKey;
+};
+
+const CacheInspector = ({ queryKey, currentKey }: CacheInspectorProps) => {
   const queryClient = useQueryClient();
   const now = useNow();
   useQueryCacheVersion();
 
-  const queries = queryClient.getQueryCache().findAll({ queryKey });
+  const isBrowser = useIsBrowser();
+
+  const queries = isBrowser
+    ? queryClient.getQueryCache().findAll({ queryKey })
+    : [];
+  const currentHash = currentKey && hashKey(currentKey);
 
   return (
     <div className="bg-muted/50 rounded-lg border p-3 text-xs">
@@ -62,7 +84,13 @@ const CacheInspector = ({ queryKey }: { queryKey: QueryKey }) => {
               : "never";
 
             return (
-              <li key={query.queryHash} className="flex items-center gap-2">
+              <li
+                key={query.queryHash}
+                className={cn(
+                  "-mx-1 flex items-center gap-2 rounded px-1",
+                  query.queryHash === currentHash && "bg-amber-400/20"
+                )}
+              >
                 <span className="flex-1 truncate">{query.queryHash}</span>
                 <span className="text-muted-foreground">{updatedAgo}</span>
                 <Badge variant={observers > 0 ? "success" : "secondary"}>

@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import CacheInspector from "@/components/demo/cache-inspector";
 import OptionGroup from "@/components/demo/option-group";
+import QueryKeyDisplay from "@/components/demo/query-key-display";
 import QueryStateBadges from "@/components/demo/query-state-badges";
 import RequestLog from "@/components/demo/request-log";
 import TodoRow from "@/components/demo/todo-row";
@@ -28,6 +29,11 @@ const KeyFactoryDemo = () => {
         options={TODO_IDS}
         value={todoId}
         onChange={setTodoId}
+      />
+      <QueryKeyDisplay
+        label={`todoQueries.detail(${todoId})`}
+        queryKey={todoKeys.detail(todoId)}
+        variableIndex={2}
       />
       <QueryStateBadges
         status={status}
@@ -59,7 +65,10 @@ const KeyFactoryDemo = () => {
         </Button>
       </div>
 
-      <CacheInspector queryKey={todoKeys.all} />
+      <CacheInspector
+        queryKey={todoKeys.all}
+        currentKey={todoKeys.detail(todoId)}
+      />
       <RequestLog filter="/api/todos/" />
     </>
   );
