@@ -16,7 +16,7 @@ const COUNTS = [1, 3, 5].map((count) => ({
 }));
 
 const ParallelDemo = () => {
-  const [count, setCount] = useState(3);
+  const [count, setCount] = useState(1);
   const ids = Array.from({ length: count }, (_, index) => index + 1);
 
   const { todos, isPending } = useQueries({
