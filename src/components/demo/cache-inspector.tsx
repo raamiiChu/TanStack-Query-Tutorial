@@ -29,6 +29,12 @@ const useQueryCacheVersion = () => {
   return version;
 };
 
+const formatDuration = (ms: number) => {
+  if (ms === Infinity) return "∞";
+  if (ms >= 60_000) return `${ms / 60_000}min`;
+  return `${ms / 1000}s`;
+};
+
 /** Shows every query in the cache whose key starts with `queryKey`. */
 const CacheInspector = ({ queryKey }: { queryKey: QueryKey }) => {
   const queryClient = useQueryClient();
@@ -62,9 +68,17 @@ const CacheInspector = ({ queryKey }: { queryKey: QueryKey }) => {
                 <Badge variant={observers > 0 ? "success" : "secondary"}>
                   {observers > 0 ? `active (${observers})` : "inactive"}
                 </Badge>
-                <Badge variant={query.isStale() ? "warning" : "success"}>
-                  {query.isStale() ? "stale" : "fresh"}
-                </Badge>
+                {observers > 0 ? (
+                  <Badge variant={query.isStale() ? "warning" : "success"}>
+                    {query.isStale() ? "stale" : "fresh"}
+                  </Badge>
+                ) : (
+                  // Staleness is judged by the next observer's staleTime, so an
+                  // inactive entry only has a garbage-collection deadline.
+                  <Badge variant="outline">
+                    gcTime: {formatDuration(query.gcTime)}
+                  </Badge>
+                )}
               </li>
             );
           })}

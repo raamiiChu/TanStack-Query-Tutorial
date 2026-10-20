@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import CacheInspector from "@/components/demo/cache-inspector";
 import OptionGroup from "@/components/demo/option-group";
@@ -53,6 +53,7 @@ const TodoList = ({
 };
 
 const LifecycleDemo = () => {
+  const queryClient = useQueryClient();
   const [isMounted, setIsMounted] = useState(true);
   const [staleTime, setStaleTime] = useState(STALE_TIMES[0].value);
   const [gcTime, setGcTime] = useState(GC_TIMES[0].value);
@@ -69,14 +70,18 @@ const LifecycleDemo = () => {
         label="gcTime"
         options={GC_TIMES}
         value={gcTime}
-        onChange={setGcTime}
+        onChange={(value) => {
+          // A cached query only ever raises its gcTime, so start over to apply a shorter one.
+          queryClient.removeQueries({ queryKey: todoKeys.list(3) });
+          setGcTime(value);
+        }}
       />
       <Button variant="secondary" onClick={() => setIsMounted((prev) => !prev)}>
         {isMounted ? "Unmount" : "Mount"} {"<TodoList />"}
       </Button>
 
       {isMounted ? (
-        <TodoList staleTime={staleTime} gcTime={gcTime} />
+        <TodoList key={gcTime} staleTime={staleTime} gcTime={gcTime} />
       ) : (
         <p className="text-muted-foreground text-sm">
           {"<TodoList />"} is unmounted — the query is now inactive.
