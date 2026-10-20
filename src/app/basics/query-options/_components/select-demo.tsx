@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import RenderCounter from "@/components/demo/render-counter";
 import RequestLog from "@/components/demo/request-log";
+import TodoRow from "@/components/demo/todo-row";
 import { Button } from "@/components/ui/button";
 import { updateTodo } from "@/features/todos/api";
 import { todoKeys, todoQueries } from "@/features/todos/queries";
@@ -38,16 +39,10 @@ const TodoTitles = () => {
     select: selectTitles,
   });
 
-  return (
-    <ul className="list-disc pl-5 text-sm">
-      {titles?.slice(0, 3).map((title) => (
-        <li key={title}>{title}</li>
-      ))}
-    </ul>
-  );
+  return <p className="text-sm">{titles?.[0] ?? "…"}</p>;
 };
 
-const Actions = () => {
+const TodoEditor = () => {
   const queryClient = useQueryClient();
   const { data: todos } = useQuery(todoQueries.list(LIMIT));
   const firstTodo = todos?.[0];
@@ -61,42 +56,56 @@ const Actions = () => {
     },
   });
 
-  if (!firstTodo) return null;
+  if (!todos || !firstTodo) return null;
 
   return (
-    <div className="flex flex-wrap gap-2">
-      <Button
-        size="sm"
-        variant="secondary"
-        disabled={editTodo.isPending}
-        onClick={() =>
-          editTodo.mutate({ id: firstTodo.id, completed: !firstTodo.completed })
-        }
-      >
-        Toggle completed
-      </Button>
-      <Button
-        size="sm"
-        variant="secondary"
-        disabled={editTodo.isPending}
-        onClick={() =>
-          editTodo.mutate({
-            id: firstTodo.id,
-            title: firstTodo.title.endsWith(EDITED_SUFFIX)
-              ? firstTodo.title.slice(0, -EDITED_SUFFIX.length)
-              : `${firstTodo.title}${EDITED_SUFFIX}`,
-          })
-        }
-      >
-        Rename
-      </Button>
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-2">
+        <Button
+          size="sm"
+          variant="secondary"
+          disabled={editTodo.isPending}
+          onClick={() =>
+            editTodo.mutate({
+              id: firstTodo.id,
+              completed: !firstTodo.completed,
+            })
+          }
+        >
+          Toggle completed
+        </Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          disabled={editTodo.isPending}
+          onClick={() =>
+            editTodo.mutate({
+              id: firstTodo.id,
+              title: firstTodo.title.endsWith(EDITED_SUFFIX)
+                ? firstTodo.title.slice(0, -EDITED_SUFFIX.length)
+                : `${firstTodo.title}${EDITED_SUFFIX}`,
+            })
+          }
+        >
+          Rename
+        </Button>
+      </div>
+      <ul className="space-y-2">
+        {todos.slice(0, 3).map((todo) => (
+          <TodoRow
+            key={todo.id}
+            todo={todo}
+            className={todo.id === firstTodo.id ? "border-amber-400" : ""}
+          />
+        ))}
+      </ul>
     </div>
   );
 };
 
 const SelectDemo = () => (
   <>
-    <Actions />
+    <TodoEditor />
     <div className="grid gap-2 md:grid-cols-3">
       <RenderCounter label="no select">
         <WholeList />
