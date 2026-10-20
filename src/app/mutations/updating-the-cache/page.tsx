@@ -21,9 +21,15 @@ const sections: Section[] = [
     Example: CacheUpdateDemo,
     files: [
       readSource(
-        "src/app/mutations/updating-the-cache/_components/cache-update-demo.tsx"
+        "src/app/mutations/updating-the-cache/_components/cache-update-demo.tsx",
+        [{ from: "onSuccess: (newTodo) => {", to: "[newTodo, ...old]" }]
       ),
-      readSource("src/app/api/todos/route.ts"),
+      readSource("src/app/api/todos/route.ts", [
+        {
+          from: "const todo = await prisma.todo.create",
+          to: "return Response.json(todo, { status: 201 })",
+        },
+      ]),
     ],
     Description: () => (
       <>

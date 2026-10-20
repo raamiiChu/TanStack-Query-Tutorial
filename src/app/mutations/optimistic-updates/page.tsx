@@ -11,7 +11,8 @@ const sections: Section[] = [
     Example: OptimisticCacheDemo,
     files: [
       readSource(
-        "src/app/mutations/optimistic-updates/_components/optimistic-cache-demo.tsx"
+        "src/app/mutations/optimistic-updates/_components/optimistic-cache-demo.tsx",
+        [{ from: "onMutate: async (variables) => {", to: "onSettled:" }]
       ),
     ],
     Description: () => (
@@ -49,7 +50,12 @@ const sections: Section[] = [
     Example: OptimisticUiDemo,
     files: [
       readSource(
-        "src/app/mutations/optimistic-updates/_components/optimistic-ui-demo.tsx"
+        "src/app/mutations/optimistic-updates/_components/optimistic-ui-demo.tsx",
+        [
+          "onSettled: () =>",
+          { from: "{addTodo.isPending && (", to: 'className="opacity-50"' },
+          "onClick={() => addTodo.mutate(addTodo.variables)}",
+        ]
       ),
     ],
     Description: () => (

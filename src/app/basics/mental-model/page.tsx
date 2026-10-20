@@ -24,8 +24,14 @@ const sections: Section[] = [
     name: "Query lifecycle",
     Example: LifecycleDemo,
     files: [
-      readSource("src/app/basics/mental-model/_components/lifecycle-demo.tsx"),
-      readSource("src/features/todos/queries.ts"),
+      readSource("src/app/basics/mental-model/_components/lifecycle-demo.tsx", [
+        { from: "...todoQueries.list(3),", to: "gcTime," },
+        "queryClient.removeQueries({ queryKey: todoKeys.list(3) })",
+      ]),
+      readSource("src/features/todos/queries.ts", [
+        "queryKey: todoKeys.list(limit)",
+        "queryFn: ({ signal }) => fetchTodos(limit, signal)",
+      ]),
     ],
     Description: () => (
       <>
@@ -74,7 +80,9 @@ const sections: Section[] = [
     name: "Request deduplication",
     Example: DedupDemo,
     files: [
-      readSource("src/app/basics/mental-model/_components/dedup-demo.tsx"),
+      readSource("src/app/basics/mental-model/_components/dedup-demo.tsx", [
+        "useQuery(todoQueries.list(4))",
+      ]),
     ],
     Description: () => (
       <>

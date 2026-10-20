@@ -9,9 +9,16 @@ const sections: Section[] = [
     name: "Polling a long-running job",
     Example: PollingDemo,
     files: [
-      readSource("src/features/jobs/queries.ts"),
-      readSource("src/app/advanced/polling/_components/polling-demo.tsx"),
-      readSource("src/app/api/jobs/[id]/route.ts"),
+      readSource("src/features/jobs/queries.ts", [
+        { from: "refetchInterval: (query) =>", to: "? false : 1000" },
+      ]),
+      readSource("src/app/advanced/polling/_components/polling-demo.tsx", [
+        "useQuery(jobQueries.detail(jobId))",
+        "onSuccess: (job) => setJobId(job.id)",
+      ]),
+      readSource("src/app/api/jobs/[id]/route.ts", [
+        { from: "const progress", to: "status: progress >= 100" },
+      ]),
     ],
     Description: () => (
       <>

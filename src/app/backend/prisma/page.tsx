@@ -15,12 +15,30 @@ import {
 import { readSource } from "@/lib/source";
 
 const files = {
-  schema: readSource("prisma/schema.prisma"),
-  db: readSource("src/server/db.ts"),
-  api: readSource("src/server/api.ts"),
-  todos: readSource("src/app/api/todos/route.ts"),
-  todo: readSource("src/app/api/todos/[id]/route.ts"),
-  infinite: readSource("src/app/api/todos/infinite/route.ts"),
+  schema: readSource("prisma/schema.prisma", [
+    { from: "model Todo {", to: "updatedAt" },
+  ]),
+  db: readSource("src/server/db.ts", [
+    "adapter: new PrismaBetterSqlite3({",
+    "export const prisma =",
+  ]),
+  api: readSource("src/server/api.ts", [
+    { from: "if (delay > 0)", to: "Simulated server error" },
+    "if (error instanceof z.ZodError)",
+    "if (error instanceof HttpError)",
+  ]),
+  todos: readSource("src/app/api/todos/route.ts", [
+    { from: "prisma.todo.findMany", to: "take: limit" },
+    { from: "const todo = await prisma.todo.create", to: "status: 201" },
+  ]),
+  todo: readSource("src/app/api/todos/[id]/route.ts", [
+    "if (!todo) throw new HttpError(404",
+    "prisma.todo.update",
+  ]),
+  infinite: readSource("src/app/api/todos/infinite/route.ts", [
+    { from: "take: limit + 1", to: "cursor: { id: cursor }" },
+    { from: "const hasMore", to: "nextCursor: hasMore" },
+  ]),
 };
 
 const ENDPOINTS = [

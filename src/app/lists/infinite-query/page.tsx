@@ -9,9 +9,18 @@ const sections: Section[] = [
     name: "useInfiniteQuery + Prisma cursor",
     Example: InfiniteDemo,
     files: [
-      readSource("src/app/lists/infinite-query/_components/infinite-demo.tsx"),
-      readSource("src/features/todos/queries.ts"),
-      readSource("src/app/api/todos/infinite/route.ts"),
+      readSource("src/app/lists/infinite-query/_components/infinite-demo.tsx", [
+        "useInfiniteQuery(todoQueries.infinite())",
+        "data?.pages.flatMap",
+        "onClick={() => fetchNextPage()}",
+      ]),
+      readSource("src/features/todos/queries.ts", [
+        { from: "infiniteQueryOptions({", to: "getNextPageParam" },
+      ]),
+      readSource("src/app/api/todos/infinite/route.ts", [
+        { from: "take: limit + 1", to: "cursor: { id: cursor }" },
+        { from: "const hasMore", to: "nextCursor: hasMore" },
+      ]),
     ],
     Description: () => (
       <>

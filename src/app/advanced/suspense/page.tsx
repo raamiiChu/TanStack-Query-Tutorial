@@ -9,7 +9,11 @@ const sections: Section[] = [
     name: "useSuspenseQuery",
     Example: SuspenseDemo,
     files: [
-      readSource("src/app/advanced/suspense/_components/suspense-demo.tsx"),
+      readSource("src/app/advanced/suspense/_components/suspense-demo.tsx", [
+        { from: "useSuspenseQuery({", to: "retry: 1" },
+        { from: "<QueryErrorResetBoundary>", to: "onReset={reset}" },
+        { from: "<Suspense fallback", to: "</Suspense>" },
+      ]),
     ],
     Description: () => (
       <>

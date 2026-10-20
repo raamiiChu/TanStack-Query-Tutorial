@@ -9,7 +9,10 @@ const sections: Section[] = [
     name: "Prefetch on hover",
     Example: PrefetchDemo,
     files: [
-      readSource("src/app/advanced/prefetching/_components/prefetch-demo.tsx"),
+      readSource("src/app/advanced/prefetching/_components/prefetch-demo.tsx", [
+        "queryClient.prefetchQuery({ ...todoQueries.detail(id), staleTime: 10_000 })",
+        "onMouseEnter={() => prefetchTodo(id)}",
+      ]),
     ],
     Description: () => (
       <>

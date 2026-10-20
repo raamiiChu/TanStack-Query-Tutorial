@@ -21,9 +21,20 @@ const sections: Section[] = [
     name: "Query key factory",
     Example: KeyFactoryDemo,
     files: [
-      readSource("src/features/todos/queries.ts"),
+      readSource("src/features/todos/queries.ts", [
+        { from: "export const todoKeys = {", to: "};" },
+        {
+          from: "queryKey: todoKeys.detail(id)",
+          to: "queryFn: ({ signal }) => fetchTodo(id, signal)",
+        },
+      ]),
       readSource(
-        "src/app/basics/query-options/_components/key-factory-demo.tsx"
+        "src/app/basics/query-options/_components/key-factory-demo.tsx",
+        [
+          "todoQueries.detail(todoId)",
+          "invalidateQueries({ queryKey: todoKeys.details() })",
+          "removeQueries({ queryKey: todoKeys.all })",
+        ]
       ),
     ],
     Description: () => (
@@ -59,7 +70,11 @@ const sections: Section[] = [
     name: "Transform with select",
     Example: SelectDemo,
     files: [
-      readSource("src/app/basics/query-options/_components/select-demo.tsx"),
+      readSource("src/app/basics/query-options/_components/select-demo.tsx", [
+        { from: "const selectCompletedCount", to: "const selectTitles" },
+        "select: selectCompletedCount",
+        "select: selectTitles",
+      ]),
     ],
     Description: () => (
       <>

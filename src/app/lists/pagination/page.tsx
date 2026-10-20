@@ -9,8 +9,14 @@ const sections: Section[] = [
     name: "Paginated queries",
     Example: PaginationDemo,
     files: [
-      readSource("src/app/lists/pagination/_components/pagination-demo.tsx"),
-      readSource("src/app/api/todos/paginated/route.ts"),
+      readSource("src/app/lists/pagination/_components/pagination-demo.tsx", [
+        "placeholderData: keepPrevious ? keepPreviousData : undefined",
+        "queryClient.prefetchQuery(todoQueries.page(page + 1))",
+      ]),
+      readSource("src/app/api/todos/paginated/route.ts", [
+        "skip: (page - 1) * pageSize",
+        "take: pageSize",
+      ]),
     ],
     Description: () => (
       <>

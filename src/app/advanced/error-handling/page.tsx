@@ -10,8 +10,15 @@ const sections: Section[] = [
     name: "Retry strategy",
     Example: RetryDemo,
     files: [
-      readSource("src/app/advanced/error-handling/_components/retry-demo.tsx"),
-      readSource("src/components/providers/query-provider.tsx"),
+      readSource("src/app/advanced/error-handling/_components/retry-demo.tsx", [
+        "const { status, fetchStatus, failureCount, error } = useQuery({",
+      ]),
+      readSource("src/components/providers/query-provider.tsx", [
+        {
+          from: "retry: (failureCount, error) => {",
+          to: "return failureCount < MAX_RETRIES",
+        },
+      ]),
     ],
     Description: () => (
       <>
@@ -46,9 +53,16 @@ const sections: Section[] = [
     Example: GlobalErrorDemo,
     files: [
       readSource(
-        "src/app/advanced/error-handling/_components/global-error-demo.tsx"
+        "src/app/advanced/error-handling/_components/global-error-demo.tsx",
+        [
+          'meta: { errorMessage: "Could not archive todo" }',
+          'meta: { errorMessage: "Could not load report" }',
+        ]
       ),
-      readSource("src/components/providers/query-provider.tsx"),
+      readSource("src/components/providers/query-provider.tsx", [
+        { from: "declare module", to: "mutationMeta" },
+        { from: "queryCache: new QueryCache({", to: "defaultOptions" },
+      ]),
     ],
     Description: () => (
       <>

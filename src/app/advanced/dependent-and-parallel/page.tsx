@@ -11,7 +11,8 @@ const sections: Section[] = [
     Example: DependentDemo,
     files: [
       readSource(
-        "src/app/advanced/dependent-and-parallel/_components/dependent-demo.tsx"
+        "src/app/advanced/dependent-and-parallel/_components/dependent-demo.tsx",
+        [{ from: "const latestId", to: "skipToken" }]
       ),
     ],
     Description: () => (
@@ -45,7 +46,8 @@ const sections: Section[] = [
     Example: ParallelDemo,
     files: [
       readSource(
-        "src/app/advanced/dependent-and-parallel/_components/parallel-demo.tsx"
+        "src/app/advanced/dependent-and-parallel/_components/parallel-demo.tsx",
+        [{ from: "useQueries({", to: "isPending: results.some" }]
       ),
     ],
     Description: () => (
