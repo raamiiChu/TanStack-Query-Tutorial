@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans } from "next/font/google";
+import Image from "next/image";
 
 import { Toaster } from "sonner";
 
@@ -14,6 +15,18 @@ const notoSans = Noto_Sans({
   variable: "--font-noto-sans",
   subsets: ["latin"],
 });
+
+// Animated GIF is served as-is, so skip image optimization
+const toastIcon = (
+  <Image
+    src="/rickroll.gif"
+    alt="rickroll"
+    width={40}
+    height={40}
+    unoptimized
+    className="size-10 rounded-full object-cover"
+  />
+);
 
 export const metadata: Metadata = {
   title: "TanStack Query Tutorial",
@@ -45,7 +58,19 @@ export default function RootLayout({
                 </article>
               </main>
             </SidebarProvider>
-            <Toaster richColors position="top-center" />
+            <Toaster
+              richColors
+              position="top-center"
+              icons={{
+                success: toastIcon,
+                info: toastIcon,
+                warning: toastIcon,
+                error: toastIcon,
+              }}
+              toastOptions={{
+                classNames: { icon: "size-10!" },
+              }}
+            />
           </QueryProvider>
         </ThemeProvider>
       </body>
